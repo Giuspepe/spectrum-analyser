@@ -1,4 +1,5 @@
 import numpy as np
+from struct import unpack
 import pyaudio
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -33,8 +34,11 @@ def get_power_array_index_of_frequency(frequency):
 
 def calculate_spectrum_levels():
     spectrum_levels = list()
+    audio_data = audio_stream.read(chunk_size, exception_on_overflow=False)
+    audio_data = unpack("%dh" % (chunk_size / 2), audio_data)
+    audio_data = np.array(audio_data, dtype='h')
     # apply fft
-    fft_data = np.fft.rfft(audio_stream.read(chunk_size, exception_on_overflow=False))
+    fft_data = np.fft.rfft(audio_data)
     # remove last elementin array to make it the same size as the chunk
     fft_data = np.delete(fft_data, len(fft_data) - 1)
     # transform complex fft data to real data
