@@ -33,9 +33,9 @@ def get_power_array_index_of_frequency(frequency):
 
 
 def calculate_spectrum_levels():
-    spectrum_levels = list()
+    spectrum_levels = [0, 0, 0, 0, 0, 0, 0, 0,]
     audio_data = audio_stream.read(chunk_size, exception_on_overflow=False)
-    audio_data = unpack("%dh" % (chunk_size / 2), audio_data)
+    audio_data = unpack("%dh" % (len(audio_data) / 2), audio_data)
     audio_data = np.array(audio_data, dtype='h')
     # apply fft
     fft_data = np.fft.rfft(audio_data)
