@@ -10,10 +10,10 @@ py_audio = pyaudio.PyAudio()
 device_index = 0
 device_info = py_audio.get_device_info_by_index(device_index)
 logging.debug(f'Using device {device_index}: {device_info})')
-sampling_frequency = device_info['defaultSampleRate']  # 44100 Hz
+sampling_frequency = int(device_info['defaultSampleRate'])  # 44100 Hz
 channels = device_info['maxInputChannels']  # 1
 audio_stream = py_audio.open(format=pyaudio.paInt16, channels=channels, rate=sampling_frequency,
-                             input=True, input_device_index=device_index)
+                              input=True, input_device_index=device_index)
 
 
 frequency_bins = [(0, 156), (156, 313), (313, 625), (625, 1250), (1250, 2500),
