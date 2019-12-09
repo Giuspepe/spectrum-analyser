@@ -19,8 +19,8 @@ num_pixels_total = num_rows * num_columns
 pixel_pin = board.D18
 ORDER = neopixel.GRB
 brightness = 255
-levelColor = (0, 0, 200)
-dotColor = (200, 0, 0)
+levelColor = (0, 0, 255)
+dotColor = (255, 0, 0)
 spectrum_levels = [0, 0, 0, 0, 0, 0, 0, 0, ]
 
 
@@ -45,20 +45,26 @@ class LedStripe(threading.Thread):
 
     def refreshStripe(self):
         for column in range(0, num_columns):
-            for neglevel in range(0, num_rows - int(spectrum_levels[column])):
+            spectrum_level = spectrum_levels[column]
+            if spectrum_level > 43:
+                spectrum_level = 43
+            for neglevel in range(0, num_rows - int(spectrum_level)):
                 self.pixels[num_rows * column + num_rows - 1 - neglevel] = (0, 0, 0)
-            for level in range(0, int(spectrum_levels[column])):
+            for level in range(0, int(spectrum_level)):
                 self.pixels[num_rows * column + level] = levelColor
             self.pixels[num_rows * column + self.oldValue[column]] = dotColor
         self.pixels.show()
 
     def fallingDot(self):
         for column in range(0, num_columns):
-            if self.oldValue[column] <= int(spectrum_levels[column]):
-                self.oldValue[column] = int(spectrum_levels[column])
-            elif self.oldValue[column] > 0 and self.dotfallingrate > 2:
+            spectrum_level = spectrum_levels[column]
+            if spectrum_level > 43:
+                spectrum_level = 43
+            if self.oldValue[column] <= int(spectrum_level):
+                self.oldValue[column] = int(spectrum_level)
+            elif self.oldValue[column] > 0 and self.dotfallingrate > 1:
                 self.oldValue[column] -= 1
-        if self.dotfallingrate > 2:
+        if self.dotfallingrate > 1:
             self.dotfallingrate = 0
         else:
             self.dotfallingrate += 1
@@ -91,7 +97,7 @@ class FFT(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         logging.basicConfig(level=logging.DEBUG)
-        self.chunk_size = 1024  # Use a multiple of 8 (FFT will compute faster with a multiple of 8)
+        self.chunk_size = 512  # Use a multiple of 8 (FFT will compute faster with a multiple of 8)
         py_audio = pyaudio.PyAudio()
         device_index = 0
         device_info = py_audio.get_device_info_by_index(device_index)
